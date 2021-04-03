@@ -1,6 +1,7 @@
 const {Category} = require('../models/category');
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 
 router.get(`/`, async (req, res) => {
@@ -15,8 +16,13 @@ router.get(`/:id`, async (req, res) => {
 	res.status(200).send(category);
 });
 
-
 router.put(`/:id`, async (req, res) => {
+	// this is for checking id validity
+	if(!mongoose.isValidObjectId(req.params.id)){
+		res.status(400).send('Invalid category id');
+	}
+
+
 	let category = await Category.findByIdAndUpdate(
 		req.params.id,
 		{
@@ -30,7 +36,6 @@ router.put(`/:id`, async (req, res) => {
 	if(!category) return res.status(404).json("No Category Found with this id!")
 	res.status(200).send(category);
 });
-
 
 router.post(`/`, async (req, res) => {
 	let category = new Category({
@@ -66,4 +71,13 @@ router.delete('/:id',(req,res)=>{
 	})
 });
 
+router.get(`/get/count`, async (req, res) => {
+	let categoryCount = await Category.countDocuments((count)=> count);
+	if(!categoryCount) return res.status(500).json({
+		message:"No Products Found!"
+	})
+	res.status(200).send({
+		categoryCount:categoryCount
+	});
+});
 module.exports = router;
