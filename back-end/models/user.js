@@ -14,11 +14,11 @@ const userSchema = new mongoose.Schema({
 });
 
 // this method is to convert "_id" of mongodb into "id" in frontend
-productSchema.virtual('id').get(function () {
+userSchema.virtual('id').get(function () {
 	return this._id.toHexString();
 });
 // this method is for enabling virtual method
-productSchema.set('toJSON', {
+userSchema.set('toJSON', {
 	virtuals: true
 });
 
