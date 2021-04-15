@@ -122,4 +122,13 @@ router.get(`/get/featured`, async (req, res) => {
 	res.send(products);
 });
 
+router.get(`/get/featured/:count`, async (req, res) => {
+	const count = req.params.count ? req.params.count : 0;
+	let products = await Product.find({isFeatured: true}).limit(+count);
+	if (!products) return res.status(500).json({
+		message: "No Products Found!"
+	})
+	res.send(products);
+});
+
 module.exports = router;

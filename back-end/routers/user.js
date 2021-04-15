@@ -20,7 +20,7 @@ router.get(`/:id`, async (req, res) => {
 });
 
 
-router.post(`/`, async (req, res) => {
+router.post(`/Register`, async (req, res) => {
 	let user = new User({
 		name: req.body.name,
 		email: req.body.email,
@@ -47,9 +47,10 @@ router.post(`/`, async (req, res) => {
 router.post('/login',async (req,res)=>{
 	console.log("Called here");
 	const user = await User.findOne({email:req.body.email})
-	const secret = process.env.SECRET;
+	// console.log(user);
+	 const secret = process.env.SECRET;
+	console.log(secret);
 	if(!user) return res.status(400).send('The user not found');
-
 	if(user && bcrypt.compareSync(req.body.password,user.passwordHash))  {
 		const token = jwt.sign(
 			{
@@ -71,4 +72,37 @@ router.post('/login',async (req,res)=>{
 		res.status(400).send('Password not matched');
 	}
 })
+
+//Count Users
+router.get(`/get/count`, async (req, res) => {
+	let userCount = await User.countDocuments((count) => count);
+	if (!userCount) return res.status(500).json({
+		message: "No User Found!"
+	})
+	res.status(200).send({
+		userCount: userCount
+	});
+});
+
+router.delete('/:id', (req, res) => {
+	User.findByIdAndRemove(req.params.id).then(user => {
+		if (user) {
+			return res.status(200).json({
+				success: true,
+				message: 'User deleted'
+			});
+		} else {
+			return res.status(404).json({
+				success: false,
+				message: 'User not found'
+			});
+		}
+	}).catch(error => {
+		return res.status(400).json({
+			success: false,
+			error: error
+		})
+	})
+});
+
 module.exports = router;
