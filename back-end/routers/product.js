@@ -5,6 +5,7 @@ const {Category} = require('../models/category');
 const mongoose = require('mongoose');
 
 router.get(`/`, async (req, res) => {
+
 	let filter = {};
 	//for query params api/v1/products?categories=abcd,wxyz
 	if (req.query.categories) {
