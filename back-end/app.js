@@ -31,7 +31,7 @@ app.use(errorHandler);
 //routers
 app.use(`${api}/products`,productRouter);
 app.use(`${api}/categories`,categoryRouter);
-//app.use(`${api}/orders`,orderRouter);
+app.use(`${api}/orders`,orderRouter);
 app.use(`${api}/users`,userRouter);
 
 
