@@ -55,7 +55,11 @@ router.get(`/:id`, async (req, res) => {
 router.post(`/`, uploadOptions.single('image') ,async (req, res) => {
 	let category = await Category.findById(req.body.category);
 	if (!category) return res.status(400).send('Invalid Category');
-	const fileName = req.file.filename;
+
+	const file = req.file;
+	if(!file) return res.status(400).send('No Image on Request');
+
+	const fileName = file.filename;
 	const basePath = `${req.protocol}://${req.get('host')}/GIT/Mern_Eshop/public/uploads/`;
 
 	let product = new Product({
@@ -159,5 +163,39 @@ router.get(`/get/featured/:count`, async (req, res) => {
 	})
 	res.send(products);
 });
+
+
+router.put(
+	'/gallery-images/:id',
+	uploadOptions.array('images'),
+	async (req, res)=> {
+		if(!mongoose.isValidObjectId(req.params.id)) {
+			return res.status(400).send('Invalid Product Id')
+		}
+		const files = req.files;
+		let imagesPaths = [];
+		const basePath = `${req.protocol}://${req.get('host')}/GIT/Mern_Eshop/public/uploads/`;
+
+		if(files) {
+			files.map(file =>{
+				imagesPaths.push(`${basePath}${file.filename}`);
+			})
+		}
+
+		const product = await Product.findByIdAndUpdate(
+			req.params.id,
+			{
+				images: imagesPaths
+			},
+			{ new: true}
+		)
+
+		if(!product)
+			return res.status(500).send('the gallery cannot be updated!')
+
+		res.send(product);
+	}
+)
+
 
 module.exports = router;
