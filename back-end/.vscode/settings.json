@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/1877218e-4dc8-4202-8968-d81ea16b100d/resourceGroups/Node-js-app-resource/providers/Microsoft.Web/sites/e-com",
+    "appService.deploySubpath": "."
+}
