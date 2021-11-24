@@ -35,7 +35,7 @@ const {User} = require('../models/user')
 
 function authJwt() {
 	const secret = process.env.SECRET;
-	const api = process.env.api_url;
+	const api = process.env.API_URL;
 	return expressJwt({
 		secret,
 		algorithms: ['HS256'],
