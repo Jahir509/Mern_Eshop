@@ -13,11 +13,7 @@ const errorHandler = require('./helpers/error-handler');
 
 // variable & Models & modules
 
-// Routers variable
-const productRouter = require('./routers/product')
-const orderRouter = require('./routers/order')
-const categoryRouter = require('./routers/category')
-const userRouter = require('./routers/user')
+
 
 // Middleware
 // app.use(cors);
@@ -29,30 +25,11 @@ app.use(authJwt);
 app.use('/GIT/Mern_Eshop/public/uploads',express.static(  'G:/GIT/Mern_Eshop/public/uploads'));
 app.use(errorHandler);
 
-//routers
-app.use(`${api}/products`,productRouter);
-app.use(`${api}/categories`,categoryRouter);
-app.use(`${api}/orders`,orderRouter);
-app.use(`${api}/users`,userRouter);
-
-
-
-
-
-
+//routes
+require('./startup/routes')(app);
 
 //Database
-mongoose.connect(process.env.CONNECTION_STRING, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true,
-	dbName: 'eshop-database'
-})
-	.then(() => {
-		console.log('Database Connection is ready...')
-	})
-	.catch((err) => {
-		console.log(err);
-	})
+require('./startup/db')();
 
 app.listen(3000, () => {
 	console.log("Server is running");

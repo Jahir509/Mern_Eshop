@@ -8,7 +8,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 router.get(`/`, async (req, res) => {
-	let userList = await User.find().select('name email phone');
+	let userList = await User.find();
+		// .select('local.email local.username');
 	if(!userList) return res.status(500).json("No User Found!")
 	res.status(200).send(userList);
 });
