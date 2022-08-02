@@ -22,6 +22,13 @@ router.get(`/:id`, async (req, res) => {
 
 
 router.post(`/Register`, async (req, res) => {
+	let userExist = await User.findOne({email:req.body.email});
+	const secret = process.env.SECRET;
+	if(userExist) {
+		return res.status(400).send({
+			code:605,
+		})
+	} 
 	let user = new User({
 		name: req.body.name,
 		email: req.body.email,
@@ -38,20 +45,37 @@ router.post(`/Register`, async (req, res) => {
 	user = await user.save();
 
 	if (!user) {
-		return res.status(400).send('The user can\'t be created!');
+		return res.status(400).send({
+			code:601,
+		});
 	}
-	res.send(user);
+	const token = jwt.sign(
+		{
+			userId:user.id,
+			email: user.email,
+			isAdmin:user.isAdmin
+		},
+		secret,
+		{
+			expiresIn: '1d'
+		}
+	)
+	res.status(200).send({
+		name:user.name,
+		email:user.email,
+		token:token,
+		expiresIn: new Date(new Date().getTime() + 64764000 )  // 17.99 hours = 64764000 ms due to GMT+6
+	});
 
 });
 
 
 router.post('/login',async (req,res)=>{
-	console.log("Called here");
 	const user = await User.findOne({email:req.body.email})
-	// console.log(user);
 	 const secret = process.env.SECRET;
-	console.log(secret);
-	if(!user) return res.status(400).send('The user not found');
+	if(!user) return res.status(400).send({
+		code:606
+	});
 	if(user && bcrypt.compareSync(req.body.password,user.passwordHash))  {
 		const token = jwt.sign(
 			{
@@ -65,12 +89,16 @@ router.post('/login',async (req,res)=>{
 			}
 		)
 		res.status(200).send({
-			user:user.email,
-			token:token
+			name:user.name,
+			email:user.email,
+			token:token,
+			expiresIn: new Date(new Date().getTime() + 64764000 )  // 17.99 hours = 64764000 ms due to GMT+6
 		});
 	}
 	else {
-		res.status(400).send('Password not matched');
+		res.status(400).send({
+			code:607
+		});
 	}
 })
 

@@ -4,7 +4,7 @@ module.exports = ()=>{
     mongoose.connect(process.env.CONNECTION_STRING, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        dbName: 'ecom'
+        dbName: 'eshop-database'
     })
     .then(() => {
         console.log('Database Connection is ready...')
