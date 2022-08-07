@@ -58,6 +58,8 @@ router.post(`/Register`, async (req, res) => {
 		secret,
 		{
 			expiresIn: '1d'
+			// expiresIn: '180000'
+
 		}
 	)
 	res.status(200).send({
@@ -65,6 +67,7 @@ router.post(`/Register`, async (req, res) => {
 		email:user.email,
 		token:token,
 		expiresIn: new Date(new Date().getTime() + 64764000 )  // 17.99 hours = 64764000 ms due to GMT+6
+		// expiresIn:new Date(new Date().getTime() + 180000 )
 	});
 
 });
@@ -86,6 +89,8 @@ router.post('/login',async (req,res)=>{
 			secret,
 			{
 				expiresIn: '1d'
+				// expiresIn: '180000'
+
 			}
 		)
 		res.status(200).send({
@@ -93,6 +98,8 @@ router.post('/login',async (req,res)=>{
 			email:user.email,
 			token:token,
 			expiresIn: new Date(new Date().getTime() + 64764000 )  // 17.99 hours = 64764000 ms due to GMT+6
+			// expiresIn:new Date(new Date().getTime()+ 180000)
+
 		});
 	}
 	else {
