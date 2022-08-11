@@ -47,22 +47,9 @@ router.get(`/`, async (req, res) => {
 });
 
 router.get(`/:id`, async (req, res) => {
-	await client.connect()
-	let cachedProducts = await client.get(req.params.id);
-
-	if(cachedProducts){
-		console.log("Cache Server")
-		await client.disconnect();
-		return res.status(200).send({
-			isCached:true,
-			product: JSON.parse(cachedProducts)
-		})
-	}
 
 	let product = await Product.findById(req.params.id);
 	if (!product) return res.status(404).json("No Product Found with this id!")
-	console.log("MongoDB Server")
-	await client.set(req.params.id,JSON.stringify(product))
 	res.status(200).send(product);
 });
 
