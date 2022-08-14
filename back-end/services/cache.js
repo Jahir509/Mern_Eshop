@@ -38,8 +38,6 @@ mongoose.Query.prototype.exec = async function () {
     // redis set result data
     console.log('Saving Data into redis');
     await client.set(key,JSON.stringify(result));
-    await client.disconnect();
 
     return result;
 }
- 
