@@ -5,7 +5,6 @@ const {Category} = require('../models/category');
 const mongoose = require('mongoose');
 // Photo Uploading Library
 const multer = require('multer');
-const client = require('../helpers/redis-connect')
 const fileTypeMap = {
 	'image/png' : 'png',
 	'image/jpeg' : 'jpeg',

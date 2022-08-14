@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { getHashKey } = require('../services/cache')
 require('dotenv/config');
 
 const {User} = require('../models/user');
@@ -11,7 +12,8 @@ router.get(`/`, async (req, res) => {
 	let userList = await User.find().select('-passwordHash');
 		// .select('local.email local.username');
 	if(!userList) return res.status(500).json("No User Found!")
-	res.status(200).send(userList);
+	res.status(200)
+		.send(userList);
 });
 
 router.get(`/:id`, async (req, res) => {
