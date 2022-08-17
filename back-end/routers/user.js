@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { getHashKey } = require('../services/cache')
 require('dotenv/config');
 
 const {User} = require('../models/user');
@@ -14,6 +13,13 @@ router.get(`/`, async (req, res) => {
 	if(!userList) return res.status(500).json("No User Found!")
 	res.status(200)
 		.send(userList);
+});
+
+router.get('/fetch', (req,res)=>{
+	console.log("HI")
+	res.status(200).send({
+		message:"Hello"
+	})
 });
 
 router.get(`/:id`, async (req, res) => {
@@ -82,6 +88,7 @@ router.post('/login',async (req,res)=>{
 		code:606
 	});
 	if(user && bcrypt.compareSync(req.body.password,user.passwordHash))  {
+		// access token
 		const token = jwt.sign(
 			{
 				userId:user.id,
@@ -95,10 +102,28 @@ router.post('/login',async (req,res)=>{
 
 			}
 		)
+
+		// refreshToken
+
+		const refreshToken = jwt.sign(
+			{
+				userId:user.id,
+				email: user.email,
+				isAdmin:user.isAdmin
+			},
+			secret,
+			{
+				expiresIn: '1d'
+				// expiresIn: '180000'
+
+			}
+		)
+
 		res.status(200).send({
 			name:user.name,
 			email:user.email,
 			token:token,
+			refreshToken:refreshToken,
 			expiresIn: new Date(new Date().getTime() + 64764000 )  // 17.99 hours = 64764000 ms due to GMT+6
 			// expiresIn:new Date(new Date().getTime()+ 180000)
 

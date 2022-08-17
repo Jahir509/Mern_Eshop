@@ -61,8 +61,10 @@ mongoose.Query.prototype.exec = async function () {
         this.hashKey,
         key,
         JSON.stringify(result),
-        'EX',
-        10  // Expiration cache in Second
+        {
+            EX: 10,      // Expiration cache in Second
+            NX: true    //  Sets Expiry when expiry is not in keys
+        }
     );
 
     return result;

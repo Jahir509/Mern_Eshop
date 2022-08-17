@@ -20,7 +20,7 @@ app.use(cors());
 
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
-app.use(authJwt);
+// app.use(authJwt);
 app.use('/GIT/Mern_Eshop/public/uploads',express.static(  'G:/GIT/Mern_Eshop/public/uploads'));
 app.use(errorHandler);
 
