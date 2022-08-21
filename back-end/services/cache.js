@@ -14,7 +14,7 @@ client.on('error', (err) => console.log('Redis Client Error', err));
 mongoose.Query.prototype.cache = function(option = {}) {
     this.useCache = true;
     this.hashKey = JSON.stringify(option.key || '')
-    return this;
+    return this; 
 }
 
 mongoose.Query.prototype.exec = async function () {

@@ -40,7 +40,7 @@ router.get(`/`, async (req, res) => {
 		filter = {category: req.query.categories.split(',')};
 	}
 
-	let productList = await Product.find(filter);
+	let productList = await Product.find(filter).limit(50);
 	if (!productList) return res.status(500).json("No Products Found!")
 	res.status(200).send(productList);
 });

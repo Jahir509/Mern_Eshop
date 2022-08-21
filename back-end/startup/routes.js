@@ -6,10 +6,12 @@ const productRouter = require('../routers/product')
 const orderRouter = require('../routers/order')
 const categoryRouter = require('../routers/category')
 const userRouter = require('../routers/user')
+const paymentRouter = require('../routers/payment')
 
 //routers
 module.exports = function(app){
     app.use(express.json());
+    app.use(`${api}/payment`,paymentRouter);
     app.use(`${api}/products`,productRouter);
     app.use(`${api}/categories`,categoryRouter);
     app.use(`${api}/orders`,orderRouter);
