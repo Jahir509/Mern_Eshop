@@ -9,7 +9,7 @@ const cors = require('cors');
 const authJwt = require('./helpers/jwt');
 const errorHandler = require('./helpers/error-handler');
 const mongoose = require("mongoose");
-
+const getUser = require("./startup/getUser");
 
 // variable & Models & modules
 
@@ -18,18 +18,22 @@ const mongoose = require("mongoose");
 app.use(cors());
 // app.options('*',cors());
 
+
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
 // app.use(authJwt);
 app.use('/GIT/Mern_Eshop/public/uploads',express.static(  'G:/GIT/Mern_Eshop/public/uploads'));
 app.use(errorHandler);
 
+
+app.use(getUser);
 //routes
 require('./startup/routes')(app);
 // Redis Implementation
 require('./services/cache');
 //Database
 require('./startup/db')();
+
 
 
 

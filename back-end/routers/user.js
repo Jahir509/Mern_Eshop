@@ -59,7 +59,7 @@ router.post(`/Register`, async (req, res) => {
 	}
 	const token = jwt.sign(
 		{
-			userId:user.id,
+			userId:user._id,
 			email: user.email,
 			isAdmin:user.isAdmin
 		},
@@ -71,6 +71,7 @@ router.post(`/Register`, async (req, res) => {
 		}
 	)
 	res.status(200).send({
+		id:user._id,
 		name:user.name,
 		email:user.email,
 		token:token,
@@ -83,6 +84,7 @@ router.post(`/Register`, async (req, res) => {
 
 router.post('/login',async (req,res)=>{
 	const user = await User.findOne({email:req.body.email})
+	console.log(user)
 	 const secret = process.env.SECRET;
 	if(!user) return res.status(400).send({
 		code:606
@@ -91,7 +93,7 @@ router.post('/login',async (req,res)=>{
 		// access token
 		const token = jwt.sign(
 			{
-				userId:user.id,
+				userId:user._id,
 				email: user.email,
 				isAdmin:user.isAdmin
 			},
@@ -107,7 +109,7 @@ router.post('/login',async (req,res)=>{
 
 		const refreshToken = jwt.sign(
 			{
-				userId:user.id,
+				userId:user._id,
 				email: user.email,
 				isAdmin:user.isAdmin
 			},
@@ -120,6 +122,7 @@ router.post('/login',async (req,res)=>{
 		)
 
 		res.status(200).send({
+			id:user._id,
 			name:user.name,
 			email:user.email,
 			token:token,
