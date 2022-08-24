@@ -53,22 +53,21 @@ router.get(`/:id`, async (req, res) => {
 });
 
 /*** when use multer use this middleware */
-router.post(`/`,async (req, res) => {
+router.post(`/`,uploadOptions.single("image"),async (req, res) => {
 	let category = await Category.findById(req.body.category);
 	if (!category) return res.status(400).send('Invalid Category');
+	console.log(req.body);
+	const file = req.file;
+	if(!file) return res.status(400).send('No Image on Request');
 
-	// const file = req.file;
-	// if(!file) return res.status(400).send('No Image on Request');
-
-	// const fileName = file.filename;
-	// const basePath = `${req.protocol}://${req.get('host')}/GIT/Mern_Eshop/public/uploads/`;
+	const fileName = file.filename;
+	const basePath = `${req.protocol}://${req.get('host')}/GIT/Mern_Eshop/public/uploads/`;
 
 	let product = new Product({
 		name: req.body.name,
 		description: req.body.description,
 		richDescription: req.body.richDescription,
-		image: req.body.image,
-		// image: `${basePath}${fileName}`,
+		image: `${basePath}${fileName}`,
 		// images: req.body.images,
 		brand: req.body.brand,
 		price: req.body.price,
