@@ -3,6 +3,7 @@ const router = express.Router();
 const {Product} = require('../models/product');
 const {Category} = require('../models/category');
 const mongoose = require('mongoose');
+const { uploadImage } = require('../helpers/s3')
 // Photo Uploading Library
 const multer = require('multer');
 const fileTypeMap = {
@@ -34,6 +35,7 @@ const uploadOptions = multer({
 
 
 router.get(`/`, async (req, res) => {
+	console.log(req.query.currentPage);
 	let filter = {};
 	//for query params api/v1/products?categories=abcd,wxyz
 	if (req.query.categories) {
@@ -54,34 +56,50 @@ router.get(`/:id`, async (req, res) => {
 
 /*** when use multer use this middleware */
 router.post(`/`,uploadOptions.single("image"),async (req, res) => {
-	let category = await Category.findById(req.body.category);
-	if (!category) return res.status(400).send('Invalid Category');
-	console.log(req.body);
-	const file = req.file;
-	if(!file) return res.status(400).send('No Image on Request');
 
-	const fileName = file.filename;
-	const basePath = `${req.protocol}://${req.get('host')}/GIT/Mern_Eshop/public/uploads/`;
+	try{
 
-	let product = new Product({
-		name: req.body.name,
-		description: req.body.description,
-		richDescription: req.body.richDescription,
-		image: `${basePath}${fileName}`,
-		// images: req.body.images,
-		brand: req.body.brand,
-		price: req.body.price,
-		category: req.body.category,
-		countInStock: req.body.countInStock,
-		rating: req.body.rating,
-		numReviews: req.body.numReviews,
-		isFeatured: req.body.isFeatured
-	});
+		let category = await Category.findById(req.body.category);
+		if (!category) return res.status(400).send('Invalid Category');
 
-	product = await product.save();
-	if (!product) return res.status(500).send('the product cannot be created!');
+		// console.log(req.body);
+		const file = req.file;
+		if(!file) return res.status(400).send('No Image on Request');
 
-	res.status(200).send(product);
+		const s3Result = await uploadImage(file);
+		if(!s3Result) return res.status(400).send('S3 error')
+		// console.log(s3Result)
+
+		const fileName = file.filename;
+		const basePath = `${req.protocol}://${req.get('host')}/GIT/Mern_Eshop/public/uploads/`;
+
+		let product = new Product({
+			name: req.body.name,
+			description: req.body.description,
+			richDescription: req.body.richDescription,
+			image: `${basePath}${fileName}`,
+			// images: req.body.images,
+			brand: req.body.brand,
+			price: req.body.price,
+			category: req.body.category,
+			countInStock: req.body.countInStock,
+			rating: req.body.rating,
+			numReviews: req.body.numReviews,
+			isFeatured: req.body.isFeatured
+		});
+
+		product = await product.save();
+		if (!product) return res.status(500).send('the product cannot be created!');
+
+		res.status(200).send(product);
+	}
+	catch(err){
+		console.log(err);
+		res.status(500).send({
+			message:"Product Not Saveed",
+			error: err
+		})
+	}
 });
 
 router.put('/:id', async (req, res) => {
