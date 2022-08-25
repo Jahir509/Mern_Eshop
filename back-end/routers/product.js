@@ -3,7 +3,8 @@ const router = express.Router();
 const {Product} = require('../models/product');
 const {Category} = require('../models/category');
 const mongoose = require('mongoose');
-const { uploadImage } = require('../helpers/s3')
+const { uploadImage } = require('../helpers/s3');
+const escape = require('escape-regexp')
 // Photo Uploading Library
 const multer = require('multer');
 const fileTypeMap = {
@@ -35,16 +36,77 @@ const uploadOptions = multer({
 
 
 router.get(`/`, async (req, res) => {
-	console.log(req.query.currentPage);
+	const page = +req.query.currentPage
+	const itemsPerPage = 10;
+	let productCount = await Product.countDocuments((count) => count);
 	let filter = {};
+	if(!productCount) {
+		if (!productCount) return res.status(500).send({
+			message: "No Products Found!"
+		})
+	}
 	//for query params api/v1/products?categories=abcd,wxyz
 	if (req.query.categories) {
 		filter = {category: req.query.categories.split(',')};
 	}
 
-	let productList = await Product.find(filter).sort({_id:-1}).limit(50);
+	let productList = await Product.find(filter)
+						.skip((page-1)*itemsPerPage)
+						.limit(itemsPerPage);
+
 	if (!productList) return res.status(500).json("No Products Found!")
-	res.status(200).send(productList);
+
+	res.status(200).send({
+		productList: productList,
+		totalProducts: productCount,
+		// pagination
+		hasNextPage: itemsPerPage * page < productCount,
+		hasPreviousPage: page > 1,
+		nextPage: page + 1,
+		previousPage: page - 1 < 1 ? 1 : page - 1,
+		lastPage: Math.ceil(productCount/itemsPerPage),
+		firstPage:1,
+		currentPage: page
+	});
+});
+
+router.get('/search',async(req,res)=>{
+	const page = +req.query.currentPage
+	const searchParam = req.query.name;
+	const itemsPerPage = 10;
+	const str = escape(searchParam)
+
+	let filter={
+		"name":new RegExp(str, 'i')
+	}
+
+	let totalProducts = await Product.countDocuments(filter);
+	if(!totalProducts) {
+		return res.status(500).send({
+			message: "No Products Found!"
+		})
+	}
+
+	let products = await Product.find(filter)
+						.skip((page-1)*itemsPerPage)
+						.limit(itemsPerPage)
+						.select('name');
+
+
+	res.status(200).send({
+		products: products,
+		totalProducts: totalProducts,
+		//pagination
+		hasNextPage: itemsPerPage * page < totalProducts,
+		hasPreviousPage: page > 1,
+		nextPage: page + 1,
+		previousPage: page - 1 < 1 ? 1 : page - 1,
+		lastPage: Math.ceil(totalProducts/itemsPerPage),
+		firstPage:1,
+		currentPage: page
+	}); 
+	
+
 });
 
 router.get(`/:id`, async (req, res) => {

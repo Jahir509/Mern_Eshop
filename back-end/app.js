@@ -30,7 +30,7 @@ app.use(getUser);
 //routes
 require('./startup/routes')(app);
 // Redis Implementation
-require('./services/cache');
+//require('./services/cache');
 //Database
 require('./startup/db')();
 
