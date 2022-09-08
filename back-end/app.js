@@ -10,7 +10,9 @@ const authJwt = require('./helpers/jwt');
 const errorHandler = require('./helpers/error-handler');
 const mongoose = require("mongoose");
 const getUser = require("./startup/getUser");
-
+const {graphqlHTTP} = require("express-graphql");
+const graphqlSchema = require('./graphql/schema');
+const graphqlResolver = require('./graphql/resolvers');
 // variable & Models & modules
 
 
@@ -35,9 +37,12 @@ require('./startup/routes')(app);
 require('./startup/db')();
 
 
-
+app.use("/graphql",graphqlHTTP({
+	schema:graphqlSchema,
+	rootValue: graphqlResolver
+}))
 
 app.listen(3000, () => {
-	console.log("Server is running");
+	console.log("Server is running 3000");
 	console.log(api);
 });
