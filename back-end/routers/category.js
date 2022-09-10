@@ -28,7 +28,11 @@ router.put(`/:id`, async (req, res) => {
 		{
 			name:req.body.name,
 			icon:req.body.icon,
-			color:req.body.color
+			color:req.body.color,
+			url:req.body.url,
+			isParent: req.body.isParent,
+			isChild: req.body.isChild,
+			parentCategory: req.body.parentCategory || null
 		},
 		{
 			new:true
@@ -41,7 +45,11 @@ router.post(`/`, async (req, res) => {
 	let category = new Category({
 		name:req.body.name,
 		icon:req.body.icon,
-		color:req.body.color
+		color:req.body.color,
+		url:req.body.url,
+		isParent: req.body.isParent,
+		isChild: req.body.isChild,
+		parentCategory: req.body.parentCategory || null
 	});
 	category = await category.save();
 
