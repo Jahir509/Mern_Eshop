@@ -24,7 +24,7 @@ module.exports = buildSchema(`
        description: String!
        richDescription: String
        image: String!
-       images: [String],
+       images: [String]
        brand: String
        price: Int!
        category: Category!
@@ -48,15 +48,31 @@ module.exports = buildSchema(`
         city: String
         country: String
     }
+
+    type Auth{
+       id: ID!
+       name: String!
+       email: String!
+       token: String!
+       refreshToken: String!
+       expiresIn: String! 
+    }
     
     
     input ProductInputData{
-       name: String!
-       description: String!
-       image: String!
-       price: Int!
-       category: String!
-       countInStock: Int!
+        name: String!
+        description: String!
+        richDescription: String
+        image: String!
+        images: [String]
+        brand: String
+        price: Int!
+        category: String!
+        countInStock: Int!
+        rating: Float
+        numReviews: Int
+        isFeatured: Boolean 
+        dateCreated: String
     }
     
     input UserInputData{
@@ -72,6 +88,11 @@ module.exports = buildSchema(`
         country: String
     }
 
+    input LoginInputData{
+        email: String!
+        password: String!
+    }
+
     type RootMutation{
         createProduct ( productInput: ProductInputData): Product!,
         createUser ( userInput: UserInputData ): User!
@@ -79,6 +100,7 @@ module.exports = buildSchema(`
 
     type RootQuery{
         hello: String
+        login( loginInput: LoginInputData ): Auth!
     }
 
     schema{

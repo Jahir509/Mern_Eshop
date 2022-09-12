@@ -13,6 +13,8 @@ const getUser = require("./startup/getUser");
 const {graphqlHTTP} = require("express-graphql");
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolver = require('./graphql/resolvers');
+const graphqlAuth = require("./helpers/auth-graphql");
+const authGraphql = require('./helpers/auth-graphql');
 // variable & Models & modules
 
 
@@ -36,6 +38,8 @@ require('./startup/routes')(app);
 //Database
 require('./startup/db')();
 
+
+app.use(authGraphql);
 
 app.use("/graphql",graphqlHTTP({
 	schema:graphqlSchema,

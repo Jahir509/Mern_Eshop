@@ -84,8 +84,7 @@ router.post(`/Register`, async (req, res) => {
 
 router.post('/login',async (req,res)=>{
 	const user = await User.findOne({email:req.body.email})
-	console.log(user)
-	 const secret = process.env.SECRET;
+	const secret = process.env.SECRET;
 	if(!user) return res.status(400).send({
 		code:606
 	});
