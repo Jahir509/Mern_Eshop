@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv/config');
 
 module.exports = (req, res, next) => {
-  const authHeader = req.get('Authorization').split(" ")[1];
+  const authHeader = req.get('Authorization');
   if (!authHeader) {
     req.isAuth = false;
     return next();
@@ -21,5 +21,6 @@ module.exports = (req, res, next) => {
   }
   req.userId = decodedToken.userId;
   req.isAuth = true;
+  console.log(req.user)
   next();
 };

@@ -63,7 +63,7 @@ module.exports = buildSchema(`
         name: String!
         description: String!
         richDescription: String
-        image: String!
+        image: String
         images: [String]
         brand: String
         price: Int!

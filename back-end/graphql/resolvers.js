@@ -12,23 +12,24 @@ module.exports = {
             throw error
         }
         const errors = [];
-
-        if(!validator.isEmpty(productInput.name)){
+        console.log(productInput)
+        if(validator.isEmpty(productInput.name)){
+            console.log(productInput.name)
             errors.push({message:"name not defined"})
         }
-        if(!validator.isEmpty(productInput.description)){
+        if(validator.isEmpty(productInput.description)){
             errors.push({message:"description not defined"})
         }
-        if(!validator.isEmpty(productInput.image)){
-            errors.push({message:"image not defined"})
-        }
-        if(!validator.isEmpty(productInput.price)){
+        // if(!validator.isEmpty(productInput.image)){
+        //     errors.push({message:"image not defined"})
+        // }
+        if(!productInput.price){
             errors.push({message:"price not defined"})
         }
-        if(!validator.isEmpty(productInput.category)){
+        if(validator.isEmpty(productInput.category)){
             errors.push({message:"category not defined"})
         }
-        if(!validator.isEmpty(productInput.countInStock)){
+        if(!productInput.countInStock){
             errors.push({message:"countInStock not defined"})
         }
 
