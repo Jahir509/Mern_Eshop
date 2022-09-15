@@ -1,5 +1,6 @@
 const {Product} = require('../models/product')
 const {User} = require('../models/user')
+const {Category} = require('../models/category')
 const bcrypt = require('bcryptjs')
 const validator = require('validator')
 const jwt = require('jsonwebtoken');
@@ -11,8 +12,13 @@ module.exports = {
             error.code = 401
             throw error
         }
+        const category = await Category.findById(productInput.category)
+        if(!category){
+            const error = new Error("Invalid Category");
+            error.code = 401
+            throw error
+        }
         const errors = [];
-        console.log(productInput)
         if(validator.isEmpty(productInput.name)){
             console.log(productInput.name)
             errors.push({message:"name not defined"})
@@ -52,7 +58,7 @@ module.exports = {
             description: productInput.description,
             image: productInput.image,
             price: productInput.price,
-            category: productInput.category,
+            category: category,
             countInStock: productInput.countInStock,
             rating: productInput.rating,
             numReviews: productInput.numReviews,

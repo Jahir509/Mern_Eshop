@@ -8,6 +8,7 @@ module.exports = buildSchema(`
     }
     
     type Category{
+        _id: ID!
        name: String!
        icon: String
        color: String
