@@ -1,5 +1,4 @@
 const {buildSchema} = require('graphql')
-const {ProductData} = require('./types/product.ql')
 module.exports = buildSchema(`
     
     type ParentCategory{
@@ -107,7 +106,8 @@ module.exports = buildSchema(`
     type RootQuery{
         hello: String
         login( loginInput: LoginInputData ): Auth!
-        getAllProduct(pageNo:Int,postPerPage:Int): ProductData 
+        getAllProduct(pageNo:Int,postPerPage:Int): ProductData
+        getProductById(id:ID): Product 
     }
 
     schema{

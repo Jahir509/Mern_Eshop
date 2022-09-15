@@ -96,6 +96,24 @@ module.exports = {
             totalProducts:totalProducts
         }
     },
+    getProductById: async function({id},req){
+        // if(!req.isAuth){
+        //     const error = new Error("User not authenticated");
+        //     error.code = 401
+        //     throw error
+        // }
+        const product =await Product.findById(id).populate('category')
+        if(!product){
+            const error = new Error("Product Not Found");
+            error.code = 401
+            throw error
+        }
+
+        return {
+            ...product._doc,
+            _id:product._id.toString()
+        }
+    },
 
     createUser: async function({userInput},req){
 
