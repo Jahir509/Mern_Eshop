@@ -72,6 +72,30 @@ module.exports = {
         const createdProduct = await product.save();
         return {...createdProduct._doc, _id: createdProduct._id.toString()}
     },
+    getAllProduct: async function({pageNo,postPerPage},req){
+        // if(!req.isAuth){
+        //     const error = new Error("User not authenticated");
+        //     error.code = 401
+        //     throw error
+        // }
+        const filter = {}
+        const totalProducts = await Product.countDocuments((count)=>count);
+        const products = await Product.find()
+            .sort({_id: -1})
+            .skip((pageNo-1)*postPerPage)
+            .limit(postPerPage)
+            .populate('category')
+
+        return {
+            product: products.map(prod=>{
+                return {
+                    ...prod._doc,
+                    _id:prod._id.toString()
+                }
+            }),
+            totalProducts:totalProducts
+        }
+    },
 
     createUser: async function({userInput},req){
 
