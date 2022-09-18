@@ -7,6 +7,8 @@ const { uploadImage } = require('../helpers/s3');
 const escape = require('escape-regexp')
 // Photo Uploading Library
 const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const fileTypeMap = {
 	'image/png' : 'png',
 	'image/jpeg' : 'jpeg',
@@ -22,11 +24,11 @@ const storage = multer.diskStorage({
 		cb(uploadError, '/GIT/Mern_Eshop/public/uploads/')
 	},
 	filename: function (req, file, cb) {
-		// const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+		const uniqueSuffix = Math.round(Math.random() * 1E9);
 		// const fileName = file.originalname.replace(' ','-');
-		const fileName = file.originalname.split(' ').join('-');
+		// const fileName = file.originalname.split(' ').join('-');
 		const extension = fileTypeMap[file.mimetype];
-		cb(null,`${fileName}-${Date.now()}.${extension}`)
+		cb(null,`${uniqueSuffix}-${Date.now()}.${extension}`)
 	}
 })
 
@@ -128,8 +130,8 @@ router.post(`/`,uploadOptions.single("image"),async (req, res) => {
 		const file = req.file;
 		if(!file) return res.status(400).send('No Image on Request');
 
-		const s3Result = await uploadImage(file);
-		if(!s3Result) return res.status(400).send('S3 error')
+		// const s3Result = await uploadImage(file);
+		// if(!s3Result) return res.status(400).send('S3 error')
 		// console.log(s3Result)
 
 		const fileName = file.filename;
@@ -278,5 +280,29 @@ router.put(
 	}
 )
 
+
+router.post('/image-upload-gql',uploadOptions.single('image'),async (req,res)=>{
+	try{
+		const file = req.file;
+		if(!file) return res.status(400).send('No Image on Request');
+		if(req.body.oldPath){
+			clearImage(req.body.oldPath)
+		}
+		res.status(200).send({filePath:req.file.filename,success:true})
+	}catch(error){
+		res.status(500).send({success:false,err:error})
+	}
+})
+
+
+router.put('image-upload-gallery-gql',uploadOptions.array('images'),async (req,res)=>{
+
+})
+
+const clearImage = filePath=>{
+	filePath = path.join((__dirname,'..',filePath))
+	console.log(filePath)
+	fs.unlink(filePath,err=> console.log(err))
+}
 
 module.exports = router;

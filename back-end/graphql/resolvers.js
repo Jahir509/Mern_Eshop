@@ -4,9 +4,10 @@ const {Category} = require('../models/category')
 const bcrypt = require('bcryptjs')
 const validator = require('validator')
 const jwt = require('jsonwebtoken');
-
+const filePath = process.env.FILEPATH
 module.exports = {
     createProduct: async function({productInput},req){
+        console.log(productInput.image)
         if(!req.isAuth){
             const error = new Error("User not authenticated");
             error.code = 401
@@ -26,9 +27,9 @@ module.exports = {
         if(validator.isEmpty(productInput.description)){
             errors.push({message:"description not defined"})
         }
-        // if(!validator.isEmpty(productInput.image)){
-        //     errors.push({message:"image not defined"})
-        // }
+        if(validator.isEmpty(productInput.image)){
+            errors.push({message:"image not defined"})
+        }
         if(!productInput.price){
             errors.push({message:"price not defined"})
         }
@@ -56,7 +57,7 @@ module.exports = {
         const product = new Product({
             name: productInput.name,
             description: productInput.description,
-            image: productInput.image,
+            image: `${filePath}/${productInput.image}`,
             price: productInput.price,
             category: category,
             countInStock: productInput.countInStock,
