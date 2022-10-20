@@ -41,26 +41,46 @@ router.get(`/`, async (req, res) => {
 	const page = +req.query.currentPage
 	const itemsPerPage = 20;
 	let filter = {};
+	let sort = {};
 	//for query params api/v1/products?categories=abcd,wxyz
 	if (req.query.categories) {
-		console.log(req.query.categories.split(','))
 		filter = {category: req.query.categories.split(',')};
 	}
+	if(req.query.fromPrice && req.query.toPrice){
+		filter.price = {
+			$gte: +req.query.fromPrice,
+			$lte: +req.query.toPrice
+		}
+	}
+	if(req.query.rating){
+		sort.rating = +req.query.rating
+	}
+	if(req.query.price){
+		sort.price = +req.query.price
+	}
+	console.log(filter,sort)
 	let productCount = await Product.countDocuments(filter).count(count=>count);
 
 	if(!productCount) {
-		if (!productCount) return res.status(500).send({
-			message: "No Products Found!"
+		return res.status(200).send({
+			success:false,
+			message: "No Products Found!",
+			productList:[]
 		})
 	}
 
 
 	let productList = await Product.find(filter)
 						.populate('category')
+						.sort(sort)
 						.skip((page-1)*itemsPerPage)
 						.limit(itemsPerPage);
 
-	if (!productList) return res.status(500).json("No Products Found!")
+	if (!productList) return res.status(400).send({
+		success:false,
+		message: "No Products Found!",
+		productList:[]
+	})
 
 	res.status(200).send({
 		productList: productList,
@@ -88,7 +108,8 @@ router.get('/search',async(req,res)=>{
 
 	let totalProducts = await Product.countDocuments(filter);
 	if(!totalProducts) {
-		return res.status(500).send({
+		return res.status(200).send({
+			success:false,
 			message: "No Products Found!"
 		})
 	}
@@ -118,8 +139,18 @@ router.get('/search',async(req,res)=>{
 router.get(`/:id`, async (req, res) => {
 
 	let product = await Product.findById(req.params.id);
-	if (!product) return res.status(404).json("No Product Found with this id!")
-	res.status(200).send(product);
+	if (!product){
+		return res.status(404).send({
+			success:false,
+			message:"No Product Found with this id!",
+			data:[]
+		})
+	} 
+	res.status(200).send({
+		success:true,
+		message:"Data Found",
+		data: product
+	});
 });
 
 /*** when use multer use this middleware */
@@ -164,7 +195,8 @@ router.post(`/`,uploadOptions.single("image"),async (req, res) => {
 	catch(err){
 		console.log(err);
 		res.status(500).send({
-			message:"Product Not Saveed",
+			success:false,
+			message:"Product Not Saved",
 			error: err
 		})
 	}
