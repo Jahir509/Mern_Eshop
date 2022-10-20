@@ -39,20 +39,24 @@ const uploadOptions = multer({
 
 router.get(`/`, async (req, res) => {
 	const page = +req.query.currentPage
-	const itemsPerPage = 10;
-	let productCount = await Product.countDocuments((count) => count);
+	const itemsPerPage = 20;
 	let filter = {};
+	//for query params api/v1/products?categories=abcd,wxyz
+	if (req.query.categories) {
+		console.log(req.query.categories.split(','))
+		filter = {category: req.query.categories.split(',')};
+	}
+	let productCount = await Product.countDocuments(filter).count(count=>count);
+
 	if(!productCount) {
 		if (!productCount) return res.status(500).send({
 			message: "No Products Found!"
 		})
 	}
-	//for query params api/v1/products?categories=abcd,wxyz
-	if (req.query.categories) {
-		filter = {category: req.query.categories.split(',')};
-	}
+
 
 	let productList = await Product.find(filter)
+						.populate('category')
 						.skip((page-1)*itemsPerPage)
 						.limit(itemsPerPage);
 
@@ -247,6 +251,27 @@ router.get(`/get/featured/:count`, async (req, res) => {
 	res.send(products);
 });
 
+router.get('/category/:categoryId',async (req,res)=>{
+	try{
+		let category = req.params.categoryId;
+		let products = await Product.find({
+			category: mongoose.Types.ObjectId(category)
+		})
+		if(!products){
+			return res.status(400).send({
+				success:false,
+				message:'No Data Found with this category'
+			})
+		}
+		res.status(200).send({
+			success:true,
+			data: products
+		})
+	}catch (error){
+		res.status(200).send(req.params.categoryId);
+	}
+
+})
 
 router.put(
 	'/gallery-images/:id',
@@ -298,6 +323,9 @@ router.post('/image-upload-gql',uploadOptions.single('image'),async (req,res)=>{
 router.put('image-upload-gallery-gql',uploadOptions.array('images'),async (req,res)=>{
 
 })
+
+
+
 
 const clearImage = filePath=>{
 	filePath = path.join((__dirname,'..',filePath))

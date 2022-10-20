@@ -65,15 +65,15 @@ module.exports = buildSchema(`
     
     
     input ProductInputData{
-        name: String!
-        description: String!
+        name: String
+        description: String
         richDescription: String
         image: String
         images: [String]
         brand: String
-        price: Int!
-        category: String!
-        countInStock: Int!
+        price: Int
+        category: String
+        countInStock: Int
         rating: Float
         numReviews: Int
         isFeatured: Boolean 
@@ -100,6 +100,8 @@ module.exports = buildSchema(`
 
     type RootMutation{
         createProduct ( productInput: ProductInputData): Product!,
+        updateProduct (id:ID, productInput: ProductInputData): Product!,
+        deleteProduct (id:ID): Boolean,
         createUser ( userInput: UserInputData ): User!
     }
 
