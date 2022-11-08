@@ -44,7 +44,7 @@ function authJwt() {
 		path: [
 			{ url: /\/public\/uploads(.*)/, methods: ['GET', 'OPTIONS'] },
 			{ url: /\/api\/v1\/brands(.*)/, methods: ['GET', 'OPTIONS'] },
-			{ url: /\/api\/v1\/products(.*)/, methods: ['GET', 'OPTIONS'] },
+			{ url: /\/api\/v1\/products\/base/, methods: ['GET', 'OPTIONS'] },
 			{ url: /\/api\/v1\/categories(.*)/, methods: ['GET', 'OPTIONS'] },
 			`${api}/users`,
 			`${api}/users/login`,
@@ -58,6 +58,7 @@ async function isRevoked(req,payload,done){
 	if(!payload.isAdmin) {
 		done(null,true);
 	}
+	req.user = payload
 	done();
 }
 
