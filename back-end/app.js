@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require("path")
 const app = express();
+const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 require('dotenv/config');
@@ -24,8 +25,9 @@ app.use(cors());
 
 
 app.use(bodyParser.json());
+app.use(cookieParser())
 app.use(morgan('tiny'));
-app.use(authJwt);
+// app.use(authJwt);
 app.use('/GIT/Mern_Eshop/public/uploads',express.static(  path.join('/GIT/Mern_Eshop/public/uploads')));
 app.use(errorHandler);
 

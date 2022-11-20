@@ -9,6 +9,8 @@ const userRouter = require('../routers/user')
 const paymentRouter = require('../routers/payment')
 const uploadRouter = require('../routers/upload')
 const brandRouter = require('../routers/brand')
+const cartRouter = require('../routers/cart')
+
 
 //routers
 module.exports = function(app){
@@ -20,5 +22,7 @@ module.exports = function(app){
     app.use(`${api}/orders`,orderRouter);
     app.use(`${api}/users`,userRouter);
     app.use(`${api}/brands`,brandRouter);
+    app.use(`${api}/cart`,cartRouter);
+
 
 }
