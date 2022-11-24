@@ -10,7 +10,15 @@ const userSchema = new mongoose.Schema({
 	apartment: {type:String,default:''},
 	zip: {type:String,default:''},
 	city: {type:String,default:''},
-	country: {type:String,default:''}
+	country: {type:String,default:''},
+	shippingAddress:
+		[
+			{
+				current: {type:Boolean,default:true},
+				actual:  {type: String,default: "N/A"}
+			}
+		]
+	
 });
 
 // this method is to convert "_id" of mongodb into "id" in frontend
