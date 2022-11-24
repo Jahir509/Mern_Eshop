@@ -20,13 +20,14 @@ router.get(`/`, async (req, res) => {
 });
 
 router.get(`/:id`, async (req, res) => {
-	let cart = await Cart.findById(req.params.id);
+	let cart = await Cart.findOne({cartId:req.params.id});
 	if(!cart) return res.status(404).json("No Cart Found with this id!")
 	res.status(200).send(cart);
 });
 
 router.put(`/:cartId`, async (req, res) => {
 	let cartId = req.params.cartId
+	console.log("Hello")
 	let cart = await Cart.findOne({cartId:cartId})
 	if(cart.cartItems.find(x=>x.productId === req.body.product.productId)){
 		return res.status(200).send({
@@ -36,7 +37,7 @@ router.put(`/:cartId`, async (req, res) => {
 		})
 	}
 	cart.cartItems.push(req.body.product)
-	let updatedCart = await cart.save()
+	let updatedCart = await cart.save() 
 	res.status(200).send({
 		success:true,
 		cart:updatedCart,
@@ -44,12 +45,34 @@ router.put(`/:cartId`, async (req, res) => {
 	
 });
 
+
+router.put(`/update/:cartId`, async (req, res) => {
+	let cartId = req.params.cartId
+	console.log("Hello")
+	let cart = await Cart.findOne({cartId:cartId})
+	if(!cart){
+		res.status(500).send({
+			success:false,
+			message:"Cart not exist",
+		})
+	}
+	
+	cart.cartItems = req.body.cart.cartItems
+	let updatedCart = await cart.save() 
+	res.status(200).send({
+		success:true,
+		cart:updatedCart,
+	})
+	
+});
+
+
 router.post(`/`, async (req, res) => {
 	let cart = new Cart({
 		username:req.body.username,
 		userid:req.body.userid,
 		address:req.body.address,
-		cartItems:req.body.cartItems,
+		cartItems:req.body.cartItems, 
 	});
 	cart = await cart.save();
 
@@ -59,7 +82,7 @@ router.post(`/`, async (req, res) => {
 });
 
 router.delete('/:id',(req,res)=>{
-	Cart.findByIdAndRemove(req.params.id).then(cart=>{
+	Cart.findByIdAndRemove(req.params.id).then(cart=>{ 
 		if(cart){
 			return res.status(200).json({
 				success:true,
